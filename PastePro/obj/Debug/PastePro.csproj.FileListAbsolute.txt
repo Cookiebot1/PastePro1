@@ -1,0 +1,13 @@
+C:\Users\tuoma\source\repos\PastePro\PastePro\bin\Debug\PastePro.exe.config
+C:\Users\tuoma\source\repos\PastePro\PastePro\bin\Debug\PastePro.exe
+C:\Users\tuoma\source\repos\PastePro\PastePro\bin\Debug\PastePro.pdb
+C:\Users\tuoma\source\repos\PastePro\PastePro\bin\Debug\WindowsInput.dll
+C:\Users\tuoma\source\repos\PastePro\PastePro\bin\Debug\WindowsInput.xml
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.Properties.Resources.resources
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.csproj.GenerateResource.cache
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.csproj.CoreCompileInputs.cache
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.csproj.CopyComplete
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.exe
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.pdb
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.csprojAssemblyReference.cache
+C:\Users\tuoma\source\repos\PastePro\PastePro\obj\Debug\PastePro.PastePro.resources
