@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using WindowsInput;
 using Microsoft.Win32;
 using PastePro.Properties;
+using System.Threading;
 
 namespace PastePro
 {
@@ -15,12 +15,7 @@ namespace PastePro
         ///     Helper list to contain current hotkey id's
         /// </summary>
         private readonly List<int> _hotkeyIds = new List<int>();
-
-        /// <summary>
-        ///     Keyboard input simulator
-        /// </summary>
-        private readonly InputSimulator _inputSimulator = new InputSimulator();
-
+        
         /// <summary>
         ///     Helper to see if a hotkey is set properly
         /// </summary>
@@ -30,7 +25,7 @@ namespace PastePro
         {
             //Load form
             InitializeComponent();
-
+            
             //Add listener to windows clipboard
             var registerClipboard = AddClipboardFormatListener(Handle);
 
@@ -45,6 +40,10 @@ namespace PastePro
             //Refresh the UI
             RefreshUi();
         }
+
+
+        [DllImport("user32.dll")]
+        public static extern bool SetKeyboardState(byte[] lpKeyState);
 
         /// <summary>
         ///     Import function to Register a global hotkey
@@ -242,8 +241,15 @@ namespace PastePro
                     //If we got a string...
                     if (stringToPaste != string.Empty)
                     {
-                        //Send it as keystrokes
-                        _inputSimulator.Keyboard.TextEntry(stringToPaste);
+                        Debug.WriteLine("Hotkey pressed and detected");
+
+                            //Send it as keystrokes. Note that we send the modifier keys CTRL, Shift and alt too before the actual string 
+                            //This is done to mitigate if the user keeps hotkey pressed. For example shift will make all pasted strings to be uppercase if not done
+                            //this way
+                            SendKeys.Send("+");
+                            SendKeys.Send("^");
+                            SendKeys.Send("%");
+                            SendKeys.Send(stringToPaste);
                     }
 
                     //break
@@ -627,6 +633,16 @@ namespace PastePro
                 //Remove key from registry
                 startWithWindowsKey?.DeleteValue("PastePro", false);
             }
+        }
+
+        //"Form Shown" event handler
+        private void Form_Shown(object sender, EventArgs e)
+        {
+            //to minimize window
+            this.WindowState = FormWindowState.Minimized;
+
+            //to hide from taskbar
+            this.Hide();
         }
 
         private void Save_Click(object sender, EventArgs e)
