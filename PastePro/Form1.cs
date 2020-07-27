@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -15,7 +16,7 @@ namespace PastePro
         ///     Helper list to contain current hotkey id's
         /// </summary>
         private readonly List<int> _hotkeyIds = new List<int>();
-        
+
         /// <summary>
         ///     Helper to see if a hotkey is set properly
         /// </summary>
@@ -25,7 +26,7 @@ namespace PastePro
         {
             //Load form
             InitializeComponent();
-            
+
             //Add listener to windows clipboard
             var registerClipboard = AddClipboardFormatListener(Handle);
 
@@ -42,8 +43,6 @@ namespace PastePro
         }
 
 
-        [DllImport("user32.dll")]
-        public static extern bool SetKeyboardState(byte[] lpKeyState);
 
         /// <summary>
         ///     Import function to Register a global hotkey
@@ -182,79 +181,101 @@ namespace PastePro
             {
                 //If message was a copy event and the Paste String to First is checked...
                 case 0x031D when PasteStringToFirst.Checked:
-                {
-                    //If trim is checked, trim text else get clipboard as is
-                    var copiedText = TrimCopiedText.Checked ? Clipboard.GetText().Trim() : Clipboard.GetText();
-
-                    //If the copied text is not empty
-                    if (copiedText != string.Empty)
                     {
-                        //Set first string text to copied text
-                        FirstString.Text = copiedText;
-                    }
+                        //If trim is checked, trim text else get clipboard as is
+                        var copiedText = TrimCopiedText.Checked ? Clipboard.GetText().Trim() : Clipboard.GetText();
 
-                    //break
-                    break;
-                }
+                        //If the copied text is not empty
+                        if (copiedText != string.Empty)
+                        {
+                            //Set first string text to copied text
+                            FirstString.Text = copiedText;
+                        }
+
+                        //break
+                        break;
+                    }
                 //If message was one of our global hotkeys
                 case 0x0312:
-                {
-                    //Get ID of the hotkey that was pressed
-                    var id = m.WParam.ToInt32();
-
-                    //Declare the string to be pasted
-                    var stringToPaste = string.Empty;
-
-                    //Switch on the hotkey id, take corresponding value from text box if it is enabled in the UI
-                    switch (id)
                     {
-                        case 0:
-                            if (FirstEnabled.Checked)
+                        //Get ID of the hotkey that was pressed
+                        var id = m.WParam.ToInt32();
+                        var modifier =  ((int)m.LParam & 0xFFFF);
+
+                        //Declare the string to be pasted
+                        var stringToPaste = string.Empty;
+
+                        //Switch on the hotkey id, take corresponding value from text box if it is enabled in the UI
+                        switch (id)
+                        {
+                            case 0:
+                                if (FirstEnabled.Checked)
+                                {
+                                    stringToPaste = FirstString.Text;
+                                }
+
+                                break;
+                            case 1:
+                                if (SecondEnabled.Checked)
+                                {
+                                    stringToPaste = SecondString.Text;
+                                }
+
+                                break;
+                            case 2:
+                                if (ThirdEnabled.Checked)
+                                {
+                                    stringToPaste = ThirdString.Text;
+                                }
+
+                                break;
+                            case 3:
+                                if (FourthEnabled.Checked)
+                                {
+                                    stringToPaste = FourthString.Text;
+                                }
+
+                                break;
+                        }
+
+                        //If we got a string...
+                        if (stringToPaste != string.Empty)
+                        {
+                            Debug.WriteLine("Hotkey pressed and detected");
+
+                            //Get capslock state
+                            var capslockIsDown = Control.IsKeyLocked(Keys.CapsLock);
+
+                            //If capslock is pressed..
+                            if (capslockIsDown)
                             {
-                                stringToPaste = FirstString.Text;
+                                //Reverse string capitalization
+                                stringToPaste = new string(
+                                    stringToPaste.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
+                                        char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
                             }
 
-                            break;
-                        case 1:
-                            if (SecondEnabled.Checked)
-                            {
-                                stringToPaste = SecondString.Text;
-                            }
-
-                            break;
-                        case 2:
-                            if (ThirdEnabled.Checked)
-                            {
-                                stringToPaste = ThirdString.Text;
-                            }
-
-                            break;
-                        case 3:
-                            if (FourthEnabled.Checked)
-                            {
-                                stringToPaste = FourthString.Text;
-                            }
-
-                            break;
-                    }
-
-                    //If we got a string...
-                    if (stringToPaste != string.Empty)
-                    {
-                        Debug.WriteLine("Hotkey pressed and detected");
-
-                            //Send it as keystrokes. Note that we send the modifier keys CTRL, Shift and alt too before the actual string 
+                            //Send it as keystrokes.Note that we send the modifier keys CTRL, Shift and alt too before the actual string
                             //This is done to mitigate if the user keeps hotkey pressed. For example shift will make all pasted strings to be uppercase if not done
                             //this way
-                            SendKeys.Send("+");
-                            SendKeys.Send("^");
-                            SendKeys.Send("%");
-                            SendKeys.Send(stringToPaste);
-                    }
+                            switch (modifier)
+                            {
+                                case 1:
+                                    SendKeys.SendWait("%");
+                                    break;
+                                case 2: ;
+                                    SendKeys.SendWait("^");
+                                    break;
+                                case 4: ;
+                                    SendKeys.SendWait("+");
+                                    break;
+                            }
 
-                    //break
-                    break;
-                }
+                            SendKeys.SendWait(stringToPaste);
+                        }
+                        //break
+                        break;
+                    }
             }
         }
 
@@ -306,7 +327,7 @@ namespace PastePro
             try
             {
                 //Get the box that was clicked
-                var clickedBox = (TextBox) sender;
+                var clickedBox = (TextBox)sender;
 
                 //Get text from clipboard
                 var data = Clipboard.GetText();
@@ -335,7 +356,7 @@ namespace PastePro
         private void ShortCutBoxKeyDown(object sender, KeyEventArgs e)
         {
             //Get the short cut box
-            var shortCutBox = (TextBox) sender;
+            var shortCutBox = (TextBox)sender;
 
             //Suppress keys press
             e.SuppressKeyPress = true;
@@ -411,7 +432,7 @@ namespace PastePro
         private void ShortCutBoxKeyUp(object sender, KeyEventArgs e)
         {
             //Get current box
-            var currentBox = (TextBox) sender;
+            var currentBox = (TextBox)sender;
 
             //Get current modifer
             var modifier = KeyHelper.ModKeys.ContainsKey(e.Modifiers) ? KeyHelper.ModKeys[e.Modifiers] : 0;
