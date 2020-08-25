@@ -40,6 +40,7 @@ namespace PastePro
 
             //Refresh the UI
             RefreshUi();
+
         }
 
 
@@ -254,6 +255,21 @@ namespace PastePro
                                     stringToPaste.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
                                         char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
                             }
+
+                            // Escape { and } characters. First replace to a string that can't be entered by mistake
+                            // Then replace to escaped curly braces (if done straight away -> First replace curly braces will be replaced with the second and it is a total shitshow)
+                            stringToPaste = stringToPaste.Replace("{", "OPENBRACE123");
+                            stringToPaste = stringToPaste.Replace("}", "CLOSEBRACE123");
+                            stringToPaste = stringToPaste.Replace("OPENBRACE123", "{{}");
+                            stringToPaste = stringToPaste.Replace("CLOSEBRACE123", "{}}");
+
+                            //Replace the rest of the special characters to get enclosed with curly braces
+                            stringToPaste = stringToPaste.Replace("+", "{+}");
+                            stringToPaste = stringToPaste.Replace("^", "{^}");
+                            stringToPaste = stringToPaste.Replace("%", "{%}");
+                            stringToPaste = stringToPaste.Replace("~", "{~}");
+                            stringToPaste = stringToPaste.Replace("(", "{(}");
+                            stringToPaste = stringToPaste.Replace(")", "{)}");
 
                             //Send it as keystrokes.Note that we send the modifier keys CTRL, Shift and alt too before the actual string
                             //This is done to mitigate if the user keeps hotkey pressed. For example shift will make all pasted strings to be uppercase if not done
