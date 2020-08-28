@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using PastePro.Properties;
-using System.Threading;
+
+
 
 namespace PastePro
 {
@@ -247,10 +248,10 @@ namespace PastePro
                             //Get capslock state
                             var capslockIsDown = Control.IsKeyLocked(Keys.CapsLock);
 
-                            //If capslock is pressed..
+                           // If capslock is pressed..
                             if (capslockIsDown)
                             {
-                                //Reverse string capitalization
+                               // Reverse string capitalization
                                 stringToPaste = new string(
                                     stringToPaste.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
                                         char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
@@ -271,19 +272,23 @@ namespace PastePro
                             stringToPaste = stringToPaste.Replace("(", "{(}");
                             stringToPaste = stringToPaste.Replace(")", "{)}");
 
+
                             //Send it as keystrokes.Note that we send the modifier keys CTRL, Shift and alt too before the actual string
                             //This is done to mitigate if the user keeps hotkey pressed. For example shift will make all pasted strings to be uppercase if not done
                             //this way
                             switch (modifier)
                             {
                                 case 1:
+
                                     SendKeys.SendWait("%");
                                     break;
-                                case 2: ;
-                                    SendKeys.SendWait("^");
+                                case 2:
+                                   
+                                     SendKeys.SendWait("^");
                                     break;
-                                case 4: ;
-                                    SendKeys.SendWait("+");
+                                case 4:
+
+                                     SendKeys.SendWait("+");
                                     break;
                             }
 
