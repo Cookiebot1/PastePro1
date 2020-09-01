@@ -95,5 +95,20 @@
       />
 
   </Target>
-  
+
+
+  <!-- After build -->
+  <Target Name="AfterBuild">
+
+    <!-- Get assembly version -->
+    <GetAssemblyIdentity AssemblyFiles="..\PastePro\bin\Release\PastePro.exe">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
+    </GetAssemblyIdentity>
+
+    <!-- Rename and move final MSI -->
+    <Exec Command="if not exist Installs mkdir Installs" />
+    <Exec Command="move bin\$(Configuration)\$(OutputName).msi Installs\PastePro-%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />
+
+  </Target>
+
 </Project>

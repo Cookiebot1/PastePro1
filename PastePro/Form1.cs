@@ -28,21 +28,21 @@ namespace PastePro
 
         public PastePro()
         {
-            //Load form
+            // Load form
             InitializeComponent();
 
-            //Add listener to windows clipboard
+            // Add listener to windows clipboard
             var registerClipboard = AddClipboardFormatListener(Handle);
 
             Debug.WriteLine($"Added hook to clipboard with success? {registerClipboard}");
 
-            //Register hot keys
+            // Register hot keys
             RegisterHotkeys();
 
-            //Check windows startup setting
+            // Check windows startup setting
             CheckWindowsStartUp();
 
-            //Refresh the UI
+            // Refresh the UI
             RefreshUi();
 
         }
@@ -86,51 +86,51 @@ namespace PastePro
         /// </summary>
         private void RegisterHotkeys()
         {
-            //If first mod is not 0...
+            // If first mod is not 0...
             if (Settings.Default.FirstMod != 0)
             {
-                //Register hotkey, 0X4000 stands for Norepeat fsmodifier 
+                // Register hotkey, 0X4000 stands for Norepeat fsmodifier 
                 var register = RegisterHotKey(Handle, 0, Settings.Default.FirstMod | 0x4000, Settings.Default.FirstKey);
 
-                //Add registered hotkey to our helper list
+                // Add registered hotkey to our helper list
                 _hotkeyIds.Add(0);
 
                 Debug.WriteLine($"Registered First? {register}");
             }
 
-            //if second mod is not 0...
+            // if second mod is not 0...
             if (Settings.Default.SecondMod != 0)
             {
-                //Register hotkey, 0x4000 stands for Norepeat fsmodifier
+                // Register hotkey, 0x4000 stands for Norepeat fsmodifier
                 var register = RegisterHotKey(Handle, 1, Settings.Default.SecondMod | 0x4000,
                     Settings.Default.SecondKey);
 
-                //Add registered hotkey to our helper list
+                // Add registered hotkey to our helper list
                 _hotkeyIds.Add(1);
 
                 Debug.WriteLine($"Registered Second? {register}");
             }
 
-            //if third mod is not 0...
+            // if third mod is not 0...
             if (Settings.Default.ThirdMod != 0)
             {
-                //Register hotkey, 0x4000 stands for Norepeat fsmodifier
+                // Register hotkey, 0x4000 stands for Norepeat fsmodifier
                 var register = RegisterHotKey(Handle, 2, Settings.Default.ThirdMod | 0x4000, Settings.Default.ThirdKey);
 
-                //Add registered hotkey to our helper list
+                // Add registered hotkey to our helper list
                 _hotkeyIds.Add(2);
 
                 Debug.WriteLine($"Registered Third? {register}");
             }
 
-            //if fourth mod is not 0...
+            // if fourth mod is not 0...
             if (Settings.Default.FourthMod != 0)
             {
-                //Register hotkey, 0x4000 stands for Norepeat fsmodifier
+                // Register hotkey, 0x4000 stands for Norepeat fsmodifier
                 var register = RegisterHotKey(Handle, 3, Settings.Default.FourthMod | 0x4000,
                     Settings.Default.FourthKey);
 
-                //Add registered hotkey to our helper list
+                // Add registered hotkey to our helper list
                 _hotkeyIds.Add(3);
 
                 Debug.WriteLine($"Registered Fourth? {register}");
@@ -142,15 +142,15 @@ namespace PastePro
         /// </summary>
         private static void CheckWindowsStartUp()
         {
-            //If settings say that the application needs to start with windows...
+            // If settings say that the application needs to start with windows...
             if (Settings.Default.WindowsStartup)
             {
-                //Register application to start with windows
+                // Register application to start with windows
                 StartApplicationWithWindows();
-                //Return
+                // Return
                 return;
             }
-            //Else remove application from windows startup registry
+            // Else remove application from windows startup registry
             DisableApplicationWithWindows();
         }
 
@@ -178,39 +178,39 @@ namespace PastePro
         /// <param name="m"> The current windows message</param>
         protected override void WndProc(ref Message m)
         {
-            //Capture message
+            // Capture message
             base.WndProc(ref m);
 
-            //Switch on message.msg
+            // Switch on message.msg
             switch (m.Msg)
             {
-                //If message was a copy event and the Paste String to First is checked...
+                // If message was a copy event and the Paste String to First is checked...
                 case 0x031D when PasteStringToFirst.Checked:
                     {
-                        //If trim is checked, trim text else get clipboard as is
+                        // If trim is checked, trim text else get clipboard as is
                         var copiedText = TrimCopiedText.Checked ? Clipboard.GetText().Trim() : Clipboard.GetText();
 
-                        //If the copied text is not empty
+                        // If the copied text is not empty
                         if (copiedText != string.Empty)
                         {
-                            //Set first string text to copied text
+                            // Set first string text to copied text
                             FirstString.Text = copiedText;
                         }
 
-                        //break
+                        // break
                         break;
                     }
-                //If message was one of our global hotkeys
+                // If message was one of our global hotkeys
                 case 0x0312:
                     {
-                        //Get ID of the hotkey that was pressed
+                        // Get ID of the hotkey that was pressed
                         var id = m.WParam.ToInt32();
                         var modifier =  ((int)m.LParam & 0xFFFF);
 
-                        //Declare the string to be pasted
+                        // Declare the string to be pasted
                         var stringToPaste = string.Empty;
 
-                        //Switch on the hotkey id, take corresponding value from text box if it is enabled in the UI
+                        // Switch on the hotkey id, take corresponding value from text box if it is enabled in the UI
                         switch (id)
                         {
                             case 0:
@@ -243,49 +243,16 @@ namespace PastePro
                                 break;
                         }
 
-                        //If we got a string...
+                        // If we got a string...
                         if (stringToPaste != string.Empty)
                         {
                             Debug.WriteLine("Hotkey pressed and detected");
 
-                           // //Get capslock state
-                           // var capslockIsDown = Control.IsKeyLocked(Keys.CapsLock);
-
-                           //// If capslock is pressed..
-                           // if (capslockIsDown)
-                           // {
-                           //    // Reverse string capitalization
-                           //     stringToPaste = new string(
-                           //         stringToPaste.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
-                           //             char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
-                           // }
-
-                           // // Escape { and } characters. First replace to a string that can't be entered by mistake
-                           // // Then replace to escaped curly braces (if done straight away -> First replace curly braces will be replaced with the second and it is a total shitshow)
-                           // stringToPaste = stringToPaste.Replace("{", "OPENBRACE123");
-                           // stringToPaste = stringToPaste.Replace("}", "CLOSEBRACE123");
-                           // stringToPaste = stringToPaste.Replace("OPENBRACE123", "{{}");
-                           // stringToPaste = stringToPaste.Replace("CLOSEBRACE123", "{}}");
-
-                           // //Replace the rest of the special characters to get enclosed with curly braces
-                           // stringToPaste = stringToPaste.Replace("+", "{+}");
-                           // stringToPaste = stringToPaste.Replace("^", "{^}");
-                           // stringToPaste = stringToPaste.Replace("%", "{%}");
-                           // stringToPaste = stringToPaste.Replace("~", "{~}");
-                           // stringToPaste = stringToPaste.Replace("(", "{(}");
-                           // stringToPaste = stringToPaste.Replace(")", "{)}");
-
-
-                            //Send it as keystrokes.Note that we send the modifier keys CTRL, Shift and alt too before the actual string
-                            //This is done to mitigate if the user keeps hotkey pressed. For example shift will make all pasted strings to be uppercase if not done
-                            //this way
+                            // Send it as keystrokes.Note that we send the modifier keys CTRL, Shift and alt too before the actual string
+                            // This is done to mitigate if the user keeps hotkey pressed. For example shift will make all pasted strings to be uppercase if not done
+                            // this way
                             switch (modifier)
                             {
-                                case 1:
-
-                                    SendKeys.SendWait("%");
-                                    SendKeys.SendWait("%");
-                                    break;
                                 case 2:
                                    
                                      SendKeys.SendWait("^");
@@ -299,10 +266,9 @@ namespace PastePro
                             var simulator = new InputSimulator();
                             Thread.Sleep(100);
                             simulator.Keyboard.TextEntry(stringToPaste);
-
-                            //SendKeys.SendWait(stringToPaste);
                         }
-                        //break
+
+                        //  break
                         break;
                     }
             }
@@ -313,11 +279,11 @@ namespace PastePro
         /// </summary>
         private void Form1_Resize(object sender, EventArgs e)
         {
-            //If window state is not minimized, return
+            // If window state is not minimized, return
             if (WindowState != FormWindowState.Minimized) return;
-            //Hide
+            // Hide
             Hide();
-            //Show notify icon
+            // Show notify icon
             notifyIcon.Visible = true;
         }
 
@@ -326,13 +292,13 @@ namespace PastePro
         /// </summary>
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            //Show form
+            // Show form
             Show();
 
-            //Set window state to normal
+            // Set window state to normal
             WindowState = FormWindowState.Normal;
 
-            //Hide the icon
+            // Hide the icon
             notifyIcon.Visible = false;
         }
 
@@ -341,7 +307,7 @@ namespace PastePro
         /// </summary>
         private void EnabledCheckedChange(object sender, EventArgs e)
         {
-            //Refresh the ui
+            // Refresh the ui
             RefreshUi();
         }
 
@@ -352,23 +318,23 @@ namespace PastePro
         /// <param name="m"></param>
         private void StringBox_MouseClick(object sender, MouseEventArgs e)
         {
-            //Try to...
+            // Try to...
             try
             {
-                //Get the box that was clicked
+                // Get the box that was clicked
                 var clickedBox = (TextBox)sender;
 
-                //Get text from clipboard
+                // Get text from clipboard
                 var data = Clipboard.GetText();
 
-                //If trim copied text was set
+                // If trim copied text was set
                 if (TrimCopiedText.Checked)
                 {
-                    //Trim text
+                    // Trim text
                     data = data.Trim();
                 }
 
-                //Set to text box
+                // Set to text box
                 clickedBox.Text = data;
             }
             catch (Exception exception)
@@ -384,71 +350,71 @@ namespace PastePro
         /// <param name="e"></param>
         private void ShortCutBoxKeyDown(object sender, KeyEventArgs e)
         {
-            //Get the short cut box
+            // Get the short cut box
             var shortCutBox = (TextBox)sender;
 
-            //Suppress keys press
+            // Suppress keys press
             e.SuppressKeyPress = true;
 
-            //Clear text
+            // Clear text
             shortCutBox.Text = string.Empty;
 
-            //Set helper variable to false
+            // Set helper variable to false
             _keyIsSet = false;
 
-            //If no modifier key was given...
-            if (e.Modifiers == Keys.None)
+            // If no modifier key was given...
+            if (e.Modifiers == Keys.None || e.Modifiers == Keys.Alt)
             {
-                //Show a message box to user
-                MessageBox.Show("You have to give a modifier, like 'Control', 'Shift' or 'Alt'");
-                //Clear text from text box
+                // Show a message box to user
+                MessageBox.Show("You have to give a modifier, like 'Control', 'Shift'");
+                // Clear text from text box
                 shortCutBox.Text = string.Empty;
 
-                //Unregister hotkey, make sure that settings are correct
+                // Unregister hotkey, make sure that settings are correct
                 FixHotkeys(shortCutBox.Name);
 
-                //Return
+                // Return
                 return;
             }
 
-            //Get modifiers
+            // Get modifiers
             var modifiers = e.Modifiers.ToString().Split(',');
 
-            //If multiple modifiers...
+            // If multiple modifiers...
             if (modifiers.Length > 1)
             {
-                //Show message box to user
+                // Show message box to user
                 MessageBox.Show("Only a single modifier allowed...");
 
-                //Clear text box
+                // Clear text box
                 shortCutBox.Text = string.Empty;
 
-                //Unregister hotkey, make sure that settings are correct
+                // Unregister hotkey, make sure that settings are correct
                 FixHotkeys(shortCutBox.Name);
 
-                //Return
+                // Return
                 return;
             }
 
-            //If one modifier is found
+            // If one modifier is found
             if (modifiers[0] != Keys.None.ToString())
             {
-                //Start writing to text box
+                // Start writing to text box
                 shortCutBox.Text += modifiers[0] + " + ";
             }
 
-            //If pressed key is a modifier key...
-            if ((e.KeyCode == Keys.ShiftKey) | (e.KeyCode == Keys.ControlKey) | (e.KeyCode == Keys.Menu))
+            // If pressed key is a modifier key...
+            if ((e.KeyCode == Keys.ShiftKey) | (e.KeyCode == Keys.ControlKey))
             {
-                //The key is not set yet
+                // The key is not set yet
                 _keyIsSet = false;
             }
-            //Else
+            // Else
             else
             {
-                //Update text box
+                // Update text box
                 shortCutBox.Text += e.KeyCode.ToString();
-                //Key is set 
+                // Key is set 
                 _keyIsSet = true;
             }
         }
@@ -460,28 +426,28 @@ namespace PastePro
         /// <param name="e"></param>
         private void ShortCutBoxKeyUp(object sender, KeyEventArgs e)
         {
-            //Get current box
+            // Get current box
             var currentBox = (TextBox)sender;
 
-            //Get current modifer
+            // Get current modifer
             var modifier = KeyHelper.ModKeys.ContainsKey(e.Modifiers) ? KeyHelper.ModKeys[e.Modifiers] : 0;
 
-            //Get current key
+            // Get current key
             var key = e.KeyValue;
 
-            //If there is no modifier then return
+            // If there is no modifier then return
             if (modifier == 0) return;
 
-            //On KeyUp if KeyisSet is False then clear the text box.
+            // On KeyUp if KeyisSet is False then clear the text box.
             if (_keyIsSet == false)
             {
                 currentBox.Text = Keys.None.ToString();
             }
 
-            //Declare hotkey id helper
+            // Declare hotkey id helper
             var hotkeyId = -1;
 
-            //Get correct id
+            // Get correct id
             switch (currentBox.Name)
             {
                 case "FirstShortcut":
@@ -498,15 +464,15 @@ namespace PastePro
                     break;
             }
 
-            //If we already got a hotkey registered with that id
+            // If we already got a hotkey registered with that id
             if (_hotkeyIds.Contains(hotkeyId))
             {
-                //Unregister the old hotkey
+                // Unregister the old hotkey
                 var unregistered = UnregisterHotKey(Handle, hotkeyId);
 
                 Debug.WriteLine($"Unregistered hotkey {hotkeyId} with success? {unregistered}");
 
-                //Remove the id from our helper
+                // Remove the id from our helper
                 _hotkeyIds.Remove(hotkeyId);
 
                 if (!unregistered)
@@ -519,18 +485,18 @@ namespace PastePro
 
             Debug.WriteLine($"Try register hotkey {Handle} {hotkeyId} {modifier} {key}");
 
-            //Register new hot key
+            // Register new hot key
             var register = RegisterHotKey(Handle, hotkeyId, modifier | 0x4000, key);
 
             Debug.WriteLine($"Success? {register}");
 
-            //If a successful register
+            // If a successful register
             if (register)
             {
-                //add id to helper
+                // add id to helper
                 _hotkeyIds.Add(hotkeyId);
 
-                //Update settings
+                // Update settings
                 switch (hotkeyId)
                 {
                     case 0:
@@ -551,7 +517,7 @@ namespace PastePro
                         break;
                 }
             }
-            //else
+            // else
             else
             {
                 MessageBox.Show(
@@ -561,76 +527,76 @@ namespace PastePro
 
         private void FixHotkeys(string textBoxName)
         {
-            //Switch on checkbox name
+            // Switch on checkbox name
             switch (textBoxName)
             {
                 case "FirstShortcut":
-                    //Clear settings of corresponding text box
+                    // Clear settings of corresponding text box
                     Settings.Default.FirstMod = 0;
                     Settings.Default.FirstKey = 0;
 
-                    //If our hotkey id helper contains corresponding id...
+                    // If our hotkey id helper contains corresponding id...
                     if (_hotkeyIds.Contains(0))
                     {
-                        //Unregister the hot key
+                        // Unregister the hot key
                         var unregistered = UnregisterHotKey(Handle, 0);
                         Debug.WriteLine(unregistered);
 
-                        //Remove id from helper
+                        // Remove id from helper
                         _hotkeyIds.Remove(0);
                     }
 
                     break;
 
                 case "SecondShortcut":
-                    //Clear settings of corresponding text box
+                    // Clear settings of corresponding text box
                     Settings.Default.SecondMod = 0;
                     Settings.Default.SecondKey = 0;
 
-                    //If our hotkey id helper contains corresponding id...
+                    // If our hotkey id helper contains corresponding id...
                     if (_hotkeyIds.Contains(1))
                     {
-                        //Unregister the hot key
+                        // Unregister the hot key
                         var unregistered = UnregisterHotKey(Handle, 1);
                         Debug.WriteLine(unregistered);
 
-                        //Remove id from helper
+                        // Remove id from helper
                         _hotkeyIds.Remove(1);
                     }
 
                     break;
 
                 case "ThirdShortcut":
-                    //Clear settings of corresponding text box
+                    // Clear settings of corresponding text box
                     Settings.Default.ThirdMod = 0;
                     Settings.Default.ThirdKey = 0;
 
-                    //If our hotkey id helper contains corresponding id...
+                    // If our hotkey id helper contains corresponding id...
                     if (_hotkeyIds.Contains(2))
                     {
-                        //Unregister the hot key
+                        // Unregister the hot key
                         var unregistered = UnregisterHotKey(Handle, 2);
                         Debug.WriteLine(unregistered);
 
-                        //Remove id from helper
+                        // Remove id from helper
                         _hotkeyIds.Remove(2);
                     }
 
                     break;
 
                 case "FourthShortcut":
-                    //Clear settings of corresponding text box
+                    // Clear settings of corresponding text box
                     Settings.Default.FourthMod = 0;
                     Settings.Default.FourthKey = 0;
 
-                    //If our hotkey id helper contains corresponding id...
+                    // If our hotkey id helper contains corresponding id...
                     if (_hotkeyIds.Contains(3))
                     {
-                        //Unregister the hot key
+                        // Unregister the hot key
                         var unregistered = UnregisterHotKey(Handle, 3);
                         Debug.WriteLine(unregistered);
 
-                        //Remove id from helper
+                        // Remove id from helper
                         _hotkeyIds.Remove(3);
                     }
 
@@ -644,11 +610,11 @@ namespace PastePro
         /// <returns></returns>
         private static bool IsStartupItem()
         {
-            // The path to the key where Windows looks for startup applications
+            //  The path to the key where Windows looks for startup applications
             var startAppWithWindowsKey =
                 Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            //Return our application registeration status
+            // Return our application registeration status
             return startAppWithWindowsKey?.GetValue("PastePro") != null;
         }
 
@@ -657,14 +623,14 @@ namespace PastePro
         /// </summary>
         private static void StartApplicationWithWindows()
         {
-            // The path to the key where Windows looks for startup applications
+            //  The path to the key where Windows looks for startup applications
             var startAppWithWindowsKey =
                 Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            //If the app is already a startup item then return
+            // If the app is already a startup item then return
             if (IsStartupItem()) return;
 
-            //Else register app to run on windows start
+            // Else register app to run on windows start
             startAppWithWindowsKey?.SetValue("PastePro", Application.ExecutablePath);
         }
 
@@ -673,25 +639,25 @@ namespace PastePro
         /// </summary>
         private static void DisableApplicationWithWindows()
         {
-            // The path to the key where Windows looks for startup applications
+            //  The path to the key where Windows looks for startup applications
             var startWithWindowsKey =
                 Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            //If the app is a startup item...
+            // If the app is a startup item...
             if (IsStartupItem())
             {
-                //Remove key from registry
+                // Remove key from registry
                 startWithWindowsKey?.DeleteValue("PastePro", false);
             }
         }
 
-        //"Form Shown" event handler
+        // "Form Shown" event handler
         private void Form_Shown(object sender, EventArgs e)
         {
-            //to minimize window
+            // to minimize window
             this.WindowState = FormWindowState.Minimized;
 
-            //to hide from taskbar
+            // to hide from taskbar
             this.Hide();
         }
 
