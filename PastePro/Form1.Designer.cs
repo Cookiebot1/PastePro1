@@ -338,7 +338,7 @@
             this.MaximizeBox = false;
             this.Name = "PastePro";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "SavoniusSoft Paste Pro";
+            this.Text = "SavoniusSoft Paste Pro*";
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();

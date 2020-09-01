@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="cmpB3C84C3A4A8E4ABC47D65DD6C3790B0E" Guid="{5CD19811-E240-4D2E-8BD5-DC0DC9D82456}">
+                <File Id="fil3B950280521B3BDE45FB31F7B7046AB3" KeyPath="yes" Source="$(var.BasePath)\PastePro.application" />
+            </Component>
+            <Component Id="cmp9D4265B78BAC0194697ECD9F26D86214" Guid="{2EFEC96E-53A6-40CB-8F2A-A37AE5C772A1}">
+                <File Id="filDE003A4BC9F591F8FDF8D964C87E38C6" KeyPath="yes" Source="$(var.BasePath)\PastePro.exe" />
+            </Component>
+            <Component Id="cmpB4B1CB746353F8C9612834AA374DC0FC" Guid="{2A461A8F-88A8-45D6-AF7D-8314ED48FC14}">
+                <File Id="filC0B20575544CCC5FCAA9D89AA27CE111" KeyPath="yes" Source="$(var.BasePath)\PastePro.exe.config" />
+            </Component>
+            <Component Id="cmpD2E5531EA7F4BBAAD452C45A22D3B4FA" Guid="{5A6166AE-9BF9-4A49-A795-46786075669E}">
+                <File Id="fil235D3617CC87047BB6411F1A9CB54299" KeyPath="yes" Source="$(var.BasePath)\PastePro.exe.manifest" />
+            </Component>
+            <Component Id="cmp95AC2C7FC3D4FFDC2564190FF18B5202" Guid="{6468C2D2-CD6E-451B-9A1F-4636CCF42487}">
+                <File Id="fil44F0635CEDFDBD60264F9CCE01B1B2F6" KeyPath="yes" Source="$(var.BasePath)\PastePro.pdb" />
+            </Component>
+            <Component Id="cmp1EFC5A44769EFF31713C64E53D9D3507" Guid="{7491D1E6-0252-4BE4-8DBB-264AE70A0341}">
+                <File Id="fil09A737266A1E7C567679AF2A554A870E" KeyPath="yes" Source="$(var.BasePath)\PasteType.ico" />
+            </Component>
+            <Component Id="cmp13DB1E879511304501432DB85A4C4F65" Guid="{BC9D98AD-19CE-49E1-B730-E89D972D73BC}">
+                <File Id="filA4EFE16E1F0FE87E9B864760DDA33D3D" KeyPath="yes" Source="$(var.BasePath)\WindowsInput.dll" />
+            </Component>
+            <Component Id="cmp488EA5BC3C35DEF6B2968953D8A75316" Guid="{442EAADE-5198-40C8-A1DC-1B759C592599}">
+                <File Id="fil6D9D885F53A9EA094177E140C5C162A8" KeyPath="yes" Source="$(var.BasePath)\WindowsInput.pdb" />
+            </Component>
+            <Component Id="cmp968DD25473397FC8F1ED1BCE2E86E8B6" Guid="{DFBD7464-C089-4513-8D39-46D59E834BC9}">
+                <File Id="filB695E616405A9B85F4FFC7FBFD05BB68" KeyPath="yes" Source="$(var.BasePath)\WindowsInput.xml" />
+            </Component>
+            <Directory Id="dir00122602D311392A9D483BE33FE17DEF" Name="app.publish">
+                <Component Id="cmpC7BFD791CC134833514CAC60E48C7410" Guid="{EE5CB19B-D263-4EFF-994A-233A1AA84F02}">
+                    <File Id="filC50CF17C293B7416ABCE5981DF5D7BA2" KeyPath="yes" Source="$(var.BasePath)\app.publish\PastePro.exe" />
+                </Component>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="PublishedComponents">
+            <ComponentRef Id="cmpB3C84C3A4A8E4ABC47D65DD6C3790B0E" />
+            <ComponentRef Id="cmp9D4265B78BAC0194697ECD9F26D86214" />
+            <ComponentRef Id="cmpB4B1CB746353F8C9612834AA374DC0FC" />
+            <ComponentRef Id="cmpD2E5531EA7F4BBAAD452C45A22D3B4FA" />
+            <ComponentRef Id="cmp95AC2C7FC3D4FFDC2564190FF18B5202" />
+            <ComponentRef Id="cmp1EFC5A44769EFF31713C64E53D9D3507" />
+            <ComponentRef Id="cmp13DB1E879511304501432DB85A4C4F65" />
+            <ComponentRef Id="cmp488EA5BC3C35DEF6B2968953D8A75316" />
+            <ComponentRef Id="cmp968DD25473397FC8F1ED1BCE2E86E8B6" />
+            <ComponentRef Id="cmpC7BFD791CC134833514CAC60E48C7410" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>
